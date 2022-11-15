@@ -1,0 +1,209 @@
+// C++ program to solve fractional Knapsack Problem
+
+#include <bits/stdc++.h>
+using namespace std;
+
+// Structure for an item which stores weight and
+// corresponding value of Item
+struct Item {
+	int value, weight;
+
+	// Constructor
+	Item(int value, int weight)
+	{
+		this->value = value;
+		this->weight = weight;
+	}
+};
+
+// Comparison function to sort Item
+// according to val/weight ratio
+bool cmp(struct Item a, struct Item b)
+{
+	double r1 = (double)a.value / (double)a.weight;
+	double r2 = (double)b.value / (double)b.weight;
+	return r1 > r2;
+}
+
+// Main greedy function to solve problem
+double fractionalKnapsack(int W, struct Item arr[], int N)
+{
+	// Sorting Item on basis of ratio
+	sort(arr, arr + N, cmp);
+
+	double finalvalue = 0.0;
+
+	// Looping through all items
+	for (int i = 0; i < N; i++) {
+		
+		// If adding Item won't overflow,
+		// add it completely
+		if (arr[i].weight <= W) {
+			W -= arr[i].weight;
+			finalvalue += arr[i].value;
+		}
+
+		// If we can't add current Item,
+		// add fractional part of it
+		else {
+			finalvalue
+				+= arr[i].value
+				* ((double)W / (double)arr[i].weight);
+			break;
+		}
+	}
+
+	// Returning final value
+	return finalvalue;
+}
+
+// Driver code
+int main()
+{
+	int W = 50;
+	Item arr[] = { { 60, 10 }, { 100, 20 }, { 120, 30 } };
+
+	int N = sizeof(arr) / sizeof(arr[0]);
+
+	// Function call
+	cout << fractionalKnapsack(W, arr, N);
+	return 0;
+}
+
+
+// Java program to solve fractional Knapsack Problem
+
+import java.io.*;
+import java.util.Arrays;
+import java.util.Comparator;
+
+// Greedy approach
+class FractionalKnapSack {
+	
+	// Function to get maximum value
+	private static double getMaxValue(ItemValue[] arr,
+									int capacity)
+	{
+		// Sorting items by value/weight ratio;
+		Arrays.sort(arr, new Comparator<ItemValue>() {
+			@Override
+			public int compare(ItemValue item1,
+							ItemValue item2)
+			{
+				double cpr1
+					= new Double((double)item1.value
+								/ (double)item1.weight);
+				double cpr2
+					= new Double((double)item2.value
+								/ (double)item2.weight);
+
+				if (cpr1 < cpr2)
+					return 1;
+				else
+					return -1;
+			}
+		});
+
+		double totalValue = 0d;
+
+		for (ItemValue i : arr) {
+
+			int curWt = (int)i.weight;
+			int curVal = (int)i.value;
+
+			if (capacity - curWt >= 0) {
+
+				// this weight can be picked while
+				capacity = capacity - curWt;
+				totalValue += curVal;
+			}
+			else {
+
+				// Item cant be picked whole
+				double fraction
+					= ((double)capacity / (double)curWt);
+				totalValue += (curVal * fraction);
+				capacity
+					= (int)(capacity - (curWt * fraction));
+				break;
+			}
+		}
+
+		return totalValue;
+	}
+
+	// Item value class
+	static class ItemValue {
+
+		int value, weight;
+
+		// Item value function
+		public ItemValue(int val, int wt)
+		{
+			this.weight = wt;
+			this.value = val;
+		}
+	}
+
+	// Driver code
+	public static void main(String[] args)
+	{
+
+		ItemValue[] arr = { new ItemValue(60, 10),
+							new ItemValue(100, 20),
+							new ItemValue(120, 30) };
+
+		int capacity = 50;
+
+		double maxValue = getMaxValue(arr, capacity);
+
+		// Function call
+		System.out.println(maxValue);
+	}
+}
+
+
+# Structure for an item which stores weight and
+# corresponding value of Item
+class Item:
+	def __init__(self, value, weight):
+		self.value = value
+		self.weight = weight
+
+# Main greedy function to solve problem
+def fractionalKnapsack(W, arr):
+
+	# Sorting Item on basis of ratio
+	arr.sort(key=lambda x: (x.value/x.weight), reverse=True)
+
+	# Result(value in Knapsack)
+	finalvalue = 0.0
+
+	# Looping through all Items
+	for item in arr:
+
+		# If adding Item won't overflow,
+		# add it completely
+		if item.weight <= W:
+			W -= item.weight
+			finalvalue += item.value
+
+		# If we can't add current Item,
+		# add fractional part of it
+		else:
+			finalvalue += item.value * W / item.weight
+			break
+	
+	# Returning final value
+	return finalvalue
+
+
+# Driver Code
+if __name__ == "__main__":
+
+	W = 50
+	arr = [Item(60, 10), Item(100, 20), Item(120, 30)]
+
+	# Function call
+	max_val = fractionalKnapsack(W, arr)
+	print(max_val)
